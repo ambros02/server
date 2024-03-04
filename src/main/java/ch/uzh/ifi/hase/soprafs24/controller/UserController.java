@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.Login;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
@@ -25,6 +26,28 @@ public class UserController {
 
   UserController(UserService userService) {
     this.userService = userService;
+  }
+
+
+  @GetMapping("/users/login")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public Login loginInfo(@RequestBody UserPostDTO userPostDTO){
+      Login loginInf = new Login(false,false,null);
+      User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
+
+      User userInDb = userService.getUser(userInput.getUsername());
+
+      if(userInDb != null){
+          loginInf.setUsernameExists(true);
+          if(userInput.getPassword().equals(userInDb.getPassword())){
+              loginInf.setPasswordCorrect(true);
+              loginInf.setToken(userInDb.getToken());
+          }
+      }
+
+
+      return loginInf;
   }
 
   @GetMapping("/users")

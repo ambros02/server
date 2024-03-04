@@ -62,6 +62,11 @@ public class UserService {
    * @throws org.springframework.web.server.ResponseStatusException
    * @see User
    */
+  public User getUser(String username){
+      return userRepository.findByUsername(username);
+  }
+
+
   private void checkIfUserExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
     User userByName = userRepository.findByName(userToBeCreated.getName());
