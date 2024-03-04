@@ -29,7 +29,7 @@ public class UserController {
   }
 
 
-  @GetMapping("/users/login")
+  @PatchMapping("/users/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public Login loginInfo(@RequestBody UserPostDTO userPostDTO){
@@ -45,7 +45,6 @@ public class UserController {
               loginInf.setToken(userInDb.getToken());
           }
       }
-
 
       return loginInf;
   }
