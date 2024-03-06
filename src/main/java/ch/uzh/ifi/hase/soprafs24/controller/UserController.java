@@ -49,7 +49,7 @@ public class UserController {
   }
 
   @PatchMapping("/users/login")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public Login loginInfo(@RequestBody UserPostDTO userPostDTO){
       Login loginInf = new Login(false,false,null, null);
