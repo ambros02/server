@@ -1,8 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
 import java.util.Optional;
+import java.time.LocalDate;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.UserInfo;
 import ch.uzh.ifi.hase.soprafs24.entity.Login;
 import ch.uzh.ifi.hase.soprafs24.entity.UserName;
 import ch.uzh.ifi.hase.soprafs24.entity.UserId;
@@ -12,6 +14,7 @@ import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs24.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +35,21 @@ public class UserController {
     this.userService = userService;
   }
 
+
+  @PutMapping("/users/")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
+  public void updateUser(@RequestParam("id") Long userId, @RequestBody UserInfo userInfo){
+
+      String username = userInfo.getUsername();
+      String birthday = userInfo.getBirthday();
+
+      userService.updateUser(userId,username,birthday);
+
+  }
+
   @PatchMapping("/users/login")
-  @ResponseStatus(HttpStatus.OK)
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   @ResponseBody
   public Login loginInfo(@RequestBody UserPostDTO userPostDTO){
       Login loginInf = new Login(false,false,null, null);
