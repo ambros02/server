@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import java.util.Optional;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Login;
@@ -35,16 +36,16 @@ public class UserController {
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public Login loginInfo(@RequestBody UserPostDTO userPostDTO){
-      Login loginInf = new Login(false,false,null);
+      Login loginInf = new Login(false,false,null, null);
       User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
       User userInDb = userService.getUser(userInput.getUsername());
-
-      if(userInDb != null){
+      if(userInDb.getUsername() != null){
           loginInf.setUsernameExists(true);
           if(userInput.getPassword().equals(userInDb.getPassword())){
-              userService.changeStatus(userInput.getId(),UserStatus.ONLINE);
+              userService.changeStatus(userInDb.getId(),UserStatus.ONLINE);
               loginInf.setPasswordCorrect(true);
+              loginInf.setId(userInDb.getId());
               loginInf.setToken(userInDb.getToken());
           }
       }
