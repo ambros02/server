@@ -1,6 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
-import java.util.NoSuchElementException;
+import java.time.LocalDate;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -56,7 +56,7 @@ public class UserService {
       if(myUser.isPresent()){
         return myUser.get();
       } else {
-          throw new NoSuchElementException();
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND,(String.format("user with id %s was not found",id)));
       }
   }
 
@@ -78,6 +78,28 @@ public class UserService {
     return newUser;
   }
 
+    public void updateUser(Long userId, String username, String birthday){
+        User updateValues = this.getUserbyId(userId);
+        User existing = this.getUser(username);
+        if(existing != null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("this username already exists"));
+        }else{
+            try{
+                LocalDate birth = LocalDate.parse(birthday);
+                updateValues.setUsername(username);
+                updateValues.setBirthday(birth);
+                userRepository.save(updateValues);
+            }catch(Exception e){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("the birthday is in a bad format"));
+            }
+        }
+    }
+
+
+    public User getUser(String username){
+        return userRepository.findByUsername(username);
+    }
+
   /**
    * This is a helper method that will check the uniqueness criteria of the
    * username and the name
@@ -88,23 +110,12 @@ public class UserService {
    * @throws org.springframework.web.server.ResponseStatusException
    * @see User
    */
-  public User getUser(String username){
-      return userRepository.findByUsername(username);
-  }
-
 
   private void checkIfUserExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
 
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+    if (userByUsername != null) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, ("The username provided is not unique. Therefore, the user could not be created!"));
     }
   }
 }
