@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs24.service;
 
+import java.util.NoSuchElementException;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,13 +38,35 @@ public class UserService {
     this.userRepository = userRepository;
   }
 
+  public boolean changeStatus(Long id, UserStatus status){
+      try{
+          User user = userRepository.findById(id).get();
+          user.setStatus(status);
+          userRepository.save(user);
+          userRepository.flush();
+          return true;
+      } catch(Error err){
+          return false;
+      }
+
+  }
+
+  public User getUserbyId(Long id){
+      Optional<User> myUser = userRepository.findById(id);
+      if(myUser.isPresent()){
+        return myUser.get();
+      } else {
+          throw new NoSuchElementException();
+      }
+  }
+
   public List<User> getUsers() {
     return this.userRepository.findAll();
   }
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setStatus(UserStatus.ONLINE);
     newUser.setCreationDate(LocalDateTime.now());
     checkIfUserExists(newUser);
     // saves the given entity but data is only persisted in the database once

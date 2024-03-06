@@ -1,7 +1,10 @@
 package ch.uzh.ifi.hase.soprafs24.controller;
 
+import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
 import ch.uzh.ifi.hase.soprafs24.entity.Login;
+import ch.uzh.ifi.hase.soprafs24.entity.UserName;
+import ch.uzh.ifi.hase.soprafs24.entity.UserId;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs24.rest.mapper.DTOMapper;
@@ -28,7 +31,6 @@ public class UserController {
     this.userService = userService;
   }
 
-
   @PatchMapping("/users/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
@@ -41,6 +43,7 @@ public class UserController {
       if(userInDb != null){
           loginInf.setUsernameExists(true);
           if(userInput.getPassword().equals(userInDb.getPassword())){
+              userService.changeStatus(userInput.getId(),UserStatus.ONLINE);
               loginInf.setPasswordCorrect(true);
               loginInf.setToken(userInDb.getToken());
           }
@@ -48,6 +51,13 @@ public class UserController {
 
       return loginInf;
   }
+
+    @PatchMapping("/users/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void logout(@RequestBody UserId id){
+        userService.changeStatus(id.getId(),UserStatus.OFFLINE);
+    }
 
   @GetMapping("/users")
   @ResponseStatus(HttpStatus.OK)
