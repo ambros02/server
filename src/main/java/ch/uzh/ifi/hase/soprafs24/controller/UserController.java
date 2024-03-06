@@ -60,6 +60,13 @@ public class UserController {
         userService.changeStatus(id.getId(),UserStatus.OFFLINE);
     }
 
+  @GetMapping("/users/")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public User getUserWithId(@RequestParam("id") Long userId){
+      return userService.getUserbyId(userId);
+  }
+
   @GetMapping("/users")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
