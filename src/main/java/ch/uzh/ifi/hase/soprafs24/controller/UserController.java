@@ -41,10 +41,13 @@ public class UserController {
   @ResponseBody
   public void updateUser(@RequestParam("id") Long userId, @RequestBody UserInfo userInfo){
 
-      String username = userInfo.getUsername();
-      String birthday = userInfo.getBirthday();
+      UserInfo userInf = new UserInfo();
+      userInf.setId(userId);
+      userInf.setUsername(userInfo.getUsername());
+      userInf.setBirthday(userInfo.getBirthday());
 
-      userService.updateUser(userId,username,birthday);
+
+      userService.updateUser(userInf);
 
   }
 
@@ -69,10 +72,10 @@ public class UserController {
       return loginInf;
   }
 
-    @PatchMapping("/users/logout")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public void logout(@RequestBody UserId id){
+  @PatchMapping("/users/logout")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public void logout(@RequestBody UserId id){
         userService.changeStatus(id.getId(),UserStatus.OFFLINE);
     }
 

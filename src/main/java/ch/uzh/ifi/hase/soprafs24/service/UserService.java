@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs24.service;
 import java.time.LocalDate;
 import ch.uzh.ifi.hase.soprafs24.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs24.entity.User;
+import ch.uzh.ifi.hase.soprafs24.entity.UserInfo;
 import ch.uzh.ifi.hase.soprafs24.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,21 +79,23 @@ public class UserService {
     return newUser;
   }
 
-    public void updateUser(Long userId, String username, String birthday){
-        User updateValues = this.getUserbyId(userId);
-        User existing = this.getUser(username);
+    public void updateUser(UserInfo userInfo){
+
+        User updateValues = this.getUserbyId(userInfo.getId());
+        User existing = this.getUser(userInfo.getUsername());
         if(existing != null){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("this username already exists"));
         }else{
             try{
-                LocalDate birth = LocalDate.parse(birthday);
-                updateValues.setUsername(username);
+                LocalDate birth = LocalDate.parse(userInfo.getBirthday());
+                updateValues.setUsername(userInfo.getUsername());
                 updateValues.setBirthday(birth);
                 userRepository.save(updateValues);
             }catch(Exception e){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("the birthday is in a bad format"));
             }
         }
+
     }
 
 
