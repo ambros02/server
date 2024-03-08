@@ -54,15 +54,15 @@ public class UserControllerTest {
 
       doThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,"the user with the id has not been found")).when(userService).updateUser(Mockito.any());
 
-      MockHttpServletRequestBuilder putRequest = put("/users/?")
+      MockHttpServletRequestBuilder putRequest = put("/users/4")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(userInf))
-              .param("id","4");
+              .content(asJsonString(userInf));
 
       mockMvc.perform(putRequest)
               .andExpect(status().is(404));
 
   }
+
 
   @Test
   public void putUser_withValidId_returnsNOCONTENT() throws Exception{
@@ -80,10 +80,9 @@ public class UserControllerTest {
 
       doNothing().when(userService).updateUser(Mockito.any());
 
-      MockHttpServletRequestBuilder putRequest = put("/users/?")
+      MockHttpServletRequestBuilder putRequest = put("/users/1")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(userInf))
-              .param("id","1");
+              .content(asJsonString(userInf));
 
       mockMvc.perform(putRequest)
               .andExpect(status().is(204));
@@ -100,7 +99,7 @@ public class UserControllerTest {
 
       given(userService.getUserbyId(Mockito.any())).willReturn(user);
 
-      MockHttpServletRequestBuilder getRequest = get("/users/?")
+      MockHttpServletRequestBuilder getRequest = get("/users/1?")
               .contentType(MediaType.APPLICATION_JSON)
               .param("id",user.getId().toString());
 

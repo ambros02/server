@@ -36,10 +36,11 @@ public class UserController {
   }
 
 
-  @PutMapping("/users/")
+
+  @PutMapping("/users/{id}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @ResponseBody
-  public void updateUser(@RequestParam("id") Long userId, @RequestBody UserInfo userInfo){
+  public void updateUser(@PathVariable("id") Long userId, @RequestBody UserInfo userInfo){
 
       UserInfo userInf = new UserInfo();
       userInf.setId(userId);
@@ -84,7 +85,7 @@ public class UserController {
         userService.changeStatus(id.getId(),UserStatus.OFFLINE);
     }
 
-  @GetMapping("/users/")
+  @GetMapping("/users/{id}")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
   public User getUserWithId(@RequestParam("id") Long userId){
