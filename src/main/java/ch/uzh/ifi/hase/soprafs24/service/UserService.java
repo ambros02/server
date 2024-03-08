@@ -87,7 +87,7 @@ public class UserService {
 
         }
         else if(existing != null && !existing.getId().equals(updateValues.getId())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("this username already exists"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, ("this username already exists"));
         }else{
             try{
                 if(userInfo.getUsername().isEmpty()){
