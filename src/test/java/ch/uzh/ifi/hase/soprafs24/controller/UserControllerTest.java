@@ -90,6 +90,22 @@ public class UserControllerTest {
   }
 
   @Test
+  public void getUser_withInvalid_throwNotFound() throws Exception{
+
+      Long id = 2L;
+
+      given(userService.getUserbyId(Mockito.any())).willThrow(new ResponseStatusException(HttpStatus.NOT_FOUND,"the user with the id was not found"));
+
+      MockHttpServletRequestBuilder getRequest = get("/users/2")
+              .contentType(MediaType.APPLICATION_JSON)
+              .param("id",id.toString());
+
+      mockMvc.perform(getRequest)
+              .andExpect(status().is(404));
+
+  }
+
+  @Test
   public void getUser_withValidId_returnUser() throws Exception{
       //given
       User user = new User();
@@ -99,7 +115,7 @@ public class UserControllerTest {
 
       given(userService.getUserbyId(Mockito.any())).willReturn(user);
 
-      MockHttpServletRequestBuilder getRequest = get("/users/1?")
+      MockHttpServletRequestBuilder getRequest = get("/users/1")
               .contentType(MediaType.APPLICATION_JSON)
               .param("id",user.getId().toString());
 
