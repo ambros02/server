@@ -83,14 +83,30 @@ public class UserService {
 
         User updateValues = this.getUserbyId(userInfo.getId());
         User existing = this.getUser(userInfo.getUsername());
-        if(existing != null){
+        if(userInfo.getUsername().isEmpty() && userInfo.getBirthday().isEmpty()){
+
+        }
+        else if(existing != null && !existing.getId().equals(updateValues.getId())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("this username already exists"));
         }else{
             try{
-                LocalDate birth = LocalDate.parse(userInfo.getBirthday());
-                updateValues.setUsername(userInfo.getUsername());
-                updateValues.setBirthday(birth);
-                userRepository.save(updateValues);
+                if(userInfo.getUsername().isEmpty()){
+                    LocalDate birth = LocalDate.parse(userInfo.getBirthday());
+                    updateValues.setBirthday(birth);
+                    userRepository.save(updateValues);
+                    userRepository.flush();
+                }else if(userInfo.getBirthday().isEmpty()){
+                    updateValues.setUsername(userInfo.getUsername());
+                    userRepository.save(updateValues);
+                    userRepository.flush();
+                }else{
+                    LocalDate birth = LocalDate.parse(userInfo.getBirthday());
+                    updateValues.setUsername(userInfo.getUsername());
+                    updateValues.setBirthday(birth);
+                    userRepository.save(updateValues);
+                    userRepository.flush();
+                }
+
             }catch(Exception e){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ("the birthday is in a bad format"));
             }

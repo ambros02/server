@@ -58,16 +58,21 @@ public class UserController {
       Login loginInf = new Login(false,false,null, null);
       User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
-      User userInDb = userService.getUser(userInput.getUsername());
-      if(userInDb.getUsername() != null){
-          loginInf.setUsernameExists(true);
-          if(userInput.getPassword().equals(userInDb.getPassword())){
-              userService.changeStatus(userInDb.getId(),UserStatus.ONLINE);
-              loginInf.setPasswordCorrect(true);
-              loginInf.setId(userInDb.getId());
-              loginInf.setToken(userInDb.getToken());
+      try{
+          User userInDb = userService.getUser(userInput.getUsername());
+          if(userInDb.getUsername() != null){
+              loginInf.setUsernameExists(true);
+              if(userInput.getPassword().equals(userInDb.getPassword())){
+                  userService.changeStatus(userInDb.getId(),UserStatus.ONLINE);
+                  loginInf.setPasswordCorrect(true);
+                  loginInf.setId(userInDb.getId());
+                  loginInf.setToken(userInDb.getToken());
+              }
           }
+      }catch(Exception e){
+
       }
+
 
       return loginInf;
   }
